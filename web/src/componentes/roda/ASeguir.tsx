@@ -1,24 +1,37 @@
 /*
- * Linhas por baixo da roda com o que vem a seguir no plano de hoje.
- * (O próximo compromisso do calendário entra aqui quando a agenda for passada para React.)
+ * Linhas por baixo da roda: o próximo compromisso do calendário e o próximo bloco do plano de hoje.
  */
 import { useAgora } from '../../estado/useAgora';
 import { useLoja } from '../../estado/loja';
-import { atividadePorId } from '../../lib/consultas';
-import { hoje, horaMinuto } from '../../lib/tempo';
+import { atividadePorId, proximoCompromisso } from '../../lib/consultas';
+import { curto, hoje, horaMinuto } from '../../lib/tempo';
 
 export function ASeguir() {
   const agora = useAgora();
   const dados = useLoja(s => s.dados);
+  // Atenção: o seletor tem de devolver sempre o mesmo valor enquanto nada muda.
+  // `s.eventos[hoje()]?.eventos ?? []` criaria um [] novo a cada chamada, e o React entrava
+  // num ciclo infinito de desenhos. Por isso lê-se a resposta e o «?? []» fica cá fora.
+  const resposta = useLoja(s => s.eventos[hoje()]);
+  const eventos = resposta?.eventos ?? [];
 
-  const proximo = (dados.plans[hoje()] ?? []).find(p => p.start > agora && atividadePorId(dados, p.id));
-  if (!proximo) return null;
+  const compromisso = proximoCompromisso(eventos, agora);
+  const bloco = (dados.plans[hoje()] ?? []).find(p => p.start > agora && atividadePorId(dados, p.id));
+  if (!compromisso && !bloco) return null;
 
   return (
     <div className="mt-3 grid gap-0.5 text-[13px] text-mute">
-      <div>
-        ✨ A seguir no plano: {atividadePorId(dados, proximo.id)?.name} às {horaMinuto(proximo.start)}
-      </div>
+      {compromisso && (
+        <div>
+          📅 {compromisso.titulo} às {horaMinuto(compromisso.inicio)}{' '}
+          <span>(daqui a {curto(compromisso.inicio - agora)})</span>
+        </div>
+      )}
+      {bloco && (
+        <div>
+          ✨ A seguir no plano: {atividadePorId(dados, bloco.id)?.name} às {horaMinuto(bloco.start)}
+        </div>
+      )}
     </div>
   );
 }

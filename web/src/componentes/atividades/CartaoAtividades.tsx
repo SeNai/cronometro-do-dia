@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useLoja } from '../../estado/loja';
 import { atividadeNaRoda } from '../../lib/consultas';
 import { Botao } from '../ui/Botao';
+import { Cartao } from '../ui/Cartao';
 import { CartaoAtividade } from './CartaoAtividade';
 import { COLUNAS_EDICAO, LinhaEdicao } from './LinhaEdicao';
 
@@ -43,20 +44,14 @@ export function CartaoAtividades() {
   const naRoda = atividadeNaRoda(dados);
 
   return (
-    <section className="min-w-0 rounded-cartao border border-line bg-surface p-4.5 shadow-cartao">
-      <h2 className="mb-3.5 flex items-center gap-2 text-[13px] font-[650] tracking-[0.04em] text-mute uppercase">
-        Atividades
-        <span className="flex-1" />
-        <Botao
-          variante="fantasma"
-          pequeno
-          className="font-medium tracking-normal text-ink normal-case"
-          onClick={() => setAEditar(!aEditar)}
-        >
+    <Cartao
+      titulo="Atividades"
+      acoes={
+        <Botao variante="fantasma" pequeno onClick={() => setAEditar(!aEditar)}>
           {aEditar ? '✓ Concluído' : '✎ Editar'}
         </Botao>
-      </h2>
-
+      }
+    >
       {aEditar ? (
         <>
           <div className="grid gap-2">
@@ -81,6 +76,6 @@ export function CartaoAtividades() {
           ))}
         </div>
       )}
-    </section>
+    </Cartao>
   );
 }

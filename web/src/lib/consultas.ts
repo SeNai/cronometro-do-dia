@@ -30,6 +30,10 @@ export const corDe = (a: Atividade | undefined) =>
 /** O evento ocupa tempo? (não é de dia inteiro nem está marcado como «livre») */
 export const ocupa = (e: Evento) => !e.diaTodo && !e.livre;
 
+/** O próximo compromisso que ocupa tempo (os eventos vêm ordenados por hora de início). */
+export const proximoCompromisso = (eventos: Evento[], agora: number) =>
+  eventos.find(e => ocupa(e) && e.inicio > agora);
+
 /** Milissegundos feitos numa atividade num dia, incluindo o bloco que está a correr. */
 export function totalNoDia(dados: Dados, id: number, dia: Dia, agora = Date.now()): number {
   const a = inicioDoDia(dia);

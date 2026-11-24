@@ -18,11 +18,18 @@
  */
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { gravarDados, lerConfig, lerDados } from '../api';
-import { atividadeNaRoda, atividadePorId, corridaNaRoda, duracaoSugerida } from '../lib/consultas';
+import { alterarConfig, gravarDados, lerConfig, lerDados, lerEventos } from '../api';
+import {
+  atividadeNaRoda,
+  atividadePorId,
+  corridaNaRoda,
+  duracaoSugerida,
+  proximoCompromisso
+} from '../lib/consultas';
 import { normalizarDados } from '../lib/migracoes';
-import { ESCALA_RODA, MIN, limitar, novoUid } from '../lib/tempo';
-import type { Atividade, Config, Dados } from '../tipos';
+import { ESCALA_RODA, MIN, PASSO_RODA, curto, hoje, horaMinuto, limitar, novoUid } from '../lib/tempo';
+import type { Atividade, Bloco, Config, Dados, Dia, RespostaEventos } from '../tipos';
+import { avisar } from './avisos';
 
 /** Definições por omissão, até chegarem as do servidor (iguais às de servidor/config.py). */
 const CONFIG_INICIAL: Config = {
@@ -48,6 +55,8 @@ interface Loja {
   carregado: boolean;
   /** Mensagem a mostrar se não foi possível falar com o servidor. */
   erro: string | null;
+  /** Compromissos já lidos dos calendários, por dia (não vão para o dados.json). */
+  eventos: Record<Dia, RespostaEventos>;
 
   /** Lê definições e dados do servidor e arruma os dados antigos. Corre uma vez, no arranque. */
   carregar: () => Promise<void>;
@@ -62,6 +71,13 @@ interface Loja {
   parar: () => void;
   /** Muda a duração na roda (minutos). Com a atividade a correr, muda o tempo total do bloco. */
   definirDuracao: (minutos: number, maximo?: number) => void;
+  /** Começa a atividade de um bloco do plano, com o tempo que falta até ao fim do bloco. */
+  comecarBloco: (bloco: Bloco) => void;
+
+  /** Lê os compromissos de um dia. `refrescar` volta a descarregar os calendários (sem cache). */
+  carregarEventos: (dia: Dia, refrescar?: boolean) => Promise<void>;
+  /** Muda algumas definições (já, no ecrã) e grava-as no servidor. */
+  alterarConfig: (mudancas: Partial<Config>) => Promise<void>;
 
   /** Muda o nome, a cor ou a meta de uma atividade. */
   alterarAtividade: (id: number, mudancas: Partial<Pick<Atividade, 'name' | 'color' | 'goal'>>) => void;
@@ -77,6 +93,7 @@ export const useLoja = create<Loja>()(
     config: CONFIG_INICIAL,
     carregado: false,
     erro: null,
+    eventos: {},
 
     carregar: async () => {
       try {
@@ -112,6 +129,45 @@ export const useLoja = create<Loja>()(
         s.dados.run = { id, start: Date.now(), target: alvo };
         s.dados.sel = id;
       });
+      // diz quanto tempo livre há até ao próximo compromisso
+      const agora = Date.now();
+      const proximo = proximoCompromisso(get().eventos[hoje()]?.eventos ?? [], agora);
+      if (proximo)
+        avisar(
+          `${a.name}: tens ${curto(proximo.inicio - agora)} livres até «${proximo.titulo}» (${horaMinuto(proximo.inicio)}).`
+        );
+    },
+
+    comecarBloco: bloco => {
+      const falta = (bloco.end - Math.max(bloco.start, Date.now())) / MIN;
+      get().comecar(bloco.id, {
+        doPlano: true,
+        duracao: Math.max(PASSO_RODA, Math.round(falta / PASSO_RODA) * PASSO_RODA)
+      });
+    },
+
+    carregarEventos: async (dia, refrescar = false) => {
+      let resposta: RespostaEventos;
+      try {
+        resposta = await lerEventos(dia, refrescar);
+      } catch {
+        resposta = { eventos: [], erros: ['Não consegui falar com a app. Ela ainda está aberta?'] };
+      }
+      set(s => {
+        s.eventos[dia] = resposta;
+      });
+    },
+
+    alterarConfig: async mudancas => {
+      set(s => {
+        Object.assign(s.config, mudancas);
+      });
+      try {
+        const config = await alterarConfig(mudancas);
+        set({ config: { ...config, ...mudancas } });
+      } catch {
+        avisar('Não consegui guardar as definições.', { tipo: 'alerta' });
+      }
     },
 
     parar: () => {
