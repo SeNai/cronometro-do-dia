@@ -34,8 +34,9 @@ Os dados ficam em `dados.json`, nesta pasta.
 
 1. Instala o **Python 3** a partir de https://www.python.org/downloads/
    No Windows, marca a opção **"Add python.exe to PATH"** durante a instalação.
-2. Faz duplo clique em **`instalar.bat`**. Isto instala o que a app precisa e cria o atalho **Cronómetro do Dia** (com ícone) no Ambiente de Trabalho e no Menu Iniciar.
-3. **Para pôr a app na barra de tarefas**: abre o Menu Iniciar, procura «Cronómetro do Dia», clica com o botão direito e escolhe **Afixar na barra de tarefas**.
+2. Instala o **Node.js** (versão LTS) a partir de https://nodejs.org. Serve para gerar a interface da app.
+3. Faz duplo clique em **`instalar.bat`**. Isto instala o que a app precisa e cria o atalho **Cronómetro do Dia** (com ícone) no Ambiente de Trabalho e no Menu Iniciar.
+4. **Para pôr a app na barra de tarefas**: abre o Menu Iniciar, procura «Cronómetro do Dia», clica com o botão direito e escolhe **Afixar na barra de tarefas**.
 
 ## Abrir a app
 
@@ -85,6 +86,7 @@ Carrega em `Win + R`, escreve `shell:startup` e copia para lá o atalho «Cronó
 - **"Não consegui guardar"**: a app foi fechada. Volta a abri-la pelo ícone.
 - **Erro no calendário**: confirma que copiaste o link completo. No Google tem de ser o endereço *secreto*, não o público.
 - **⚠ Google no topo**: passa o rato por cima para veres o erro. Se a ligação expirou, vai a Definições e carrega em «Ligar outra vez».
+- **«Falta gerar a interface»**: instala o Node.js e volta a abrir a app; ela gera a interface sozinha.
 - **Quero mudar a porta**: define a variável `PORT` (por exemplo, `PORT=9000`) antes de abrir a app.
 
 ## Estrutura do projeto (para quem quiser mexer no código)
@@ -92,26 +94,21 @@ Carrega em `Win + R`, escreve `shell:startup` e copia para lá o atalho «Cronó
 ```
 app.py                  arranque pela linha de comandos (python app.py)
 abrir.pyw               arranque sem terminal, usado pelo atalho do Windows
-criar_atalho.py         cria o atalho com ícone · instalar.bat / iniciar.bat
+criar_atalho.py         cria o atalho com ícone · instalar.bat / iniciar.bat / iniciar.command
 servidor/               backend em Python (só biblioteca padrão + calendário/Google)
   config.py             caminhos, leitura/escrita de JSON, definições por omissão
   calendario.py         lê calendários iCal (só leitura)
   google_calendar.py    envia os blocos feitos para o Google Calendar
-  rotas.py              pedidos HTTP: ficheiros de static/ e a API /api/…
-static/                 interface (sem dependências externas, sem passo de build)
-  index.html            só a estrutura da página
-  css/                  um ficheiro por zona (base, layout, roda, linha-do-tempo, planos…)
-  js/main.js            ponto de entrada: arranque e relógios
-  js/nucleo/            utilitários, estado partilhado (S, CFG, ui), API, consultas aos dados
-  js/ui/                peças genéricas: avisos, menus flutuantes, sons, navegação, atalhos
-  js/funcionalidades/   uma funcionalidade por ficheiro (cronómetro, roda, atividades,
-                        calendário, plano, linha do tempo, planos/semanas, resumo, Google…)
+  rotas.py              pedidos HTTP: a interface (web/dist/) e a API /api/…
+  interface.py          gera a interface (npm run build) quando ainda não existe ou o código mudou
+web/                    interface em React + TypeScript + Vite + Tailwind (ver web/README.md)
+  src/lib/              lógica pura (tempos, plano, planos guardados, roda, resumo…)
+  src/estado/           estado partilhado (Zustand), ações e relógios
+  src/componentes/      o que aparece no ecrã, uma pasta por zona
+  dist/                 a versão gerada que o servidor entrega ao browser (não vai para o git)
 ```
 
-- O JavaScript usa **módulos ES** (`import`/`export`), que o browser carrega diretamente.
-- Cada ficheiro começa com um comentário que explica o que faz.
-- O estado partilhado está em `js/nucleo/estado.js`:
-  - `S` são os dados (gravados em `dados.json`);
-  - `CFG` são as definições;
-  - `ui` é o estado da interface, por exemplo o dia escolhido.
-- Para formatar o código com o mesmo estilo, usa `npx prettier --write "static/**/*.{js,css}"`. A configuração está em `.prettierrc.json`.
+- **Abrir a app pelo atalho trata de tudo:** se mudaste o código em `web/`, a interface é gerada outra vez antes de abrir.
+- **Para desenvolver a interface:** `cd web` e `npm run dev`. Abre em http://localhost:5173, liga o servidor Python sozinho e atualiza a cada alteração.
+- O `web/README.md` explica cada pasta e ficheiro da interface.
+- Para formatar o código: `cd web` e `npm run format`. A configuração está em `.prettierrc.json`.

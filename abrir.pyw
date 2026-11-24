@@ -77,6 +77,12 @@ def main():
         abrir_janela()
         return
     garantir_bibliotecas()
+    # gera a interface React (web/dist) se ainda não existir ou se o código mudou
+    from servidor.interface import garantir_interface
+    erro = garantir_interface()
+    if erro:
+        aviso(erro)
+        return
     import app
     srv = app.criar_servidor()
     if srv is None:

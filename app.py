@@ -8,7 +8,7 @@ Estrutura do projeto:
   app.py          este ficheiro: arranque pela linha de comandos
   abrir.pyw       arranque sem terminal (atalho do Windows)
   servidor/       backend em Python (definições, calendários, Google, API HTTP)
-  static/         interface (index.html, css/, js/)
+  web/            interface em React + TypeScript (gerada para web/dist/ com npm run build)
   dados.json      os teus dados · config.json as tuas definições
 
 Opções:  --sem-browser   não abre o browser
@@ -19,12 +19,16 @@ import threading
 import webbrowser
 
 from servidor import HAS_ICAL, PORT, criar_servidor, servir
+from servidor.interface import garantir_interface
 
 __all__ = ["criar_servidor", "servir", "main"]  # usados pelo abrir.pyw
 
 
 def main():
     url = f"http://localhost:{PORT}"
+    erro = garantir_interface()
+    if erro:
+        print(erro)
     srv = criar_servidor()
     if srv is None:
         print(f"A app já parece estar aberta. Abre {url} no browser.")
