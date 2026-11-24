@@ -44,7 +44,7 @@ import './ui/sons.js';
       Object.assign(S, { log: [], run: null, plans: {}, next: 1, sel: null }, d);
     }
   } catch (e) {
-    toast('Não consegui ler os dados. Abre a app pelo atalho (ver LEIA-ME).', 'warn');
+    toast('Não consegui ler os dados. Abre a app pelo atalho (ver README).', 'warn');
   }
   S.next = Math.max(S.next || 1, ...S.acts.map(a => a.id + 1));
   let corrigido = false;
