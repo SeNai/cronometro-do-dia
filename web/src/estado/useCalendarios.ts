@@ -1,6 +1,6 @@
 /*
- * Mantém os compromissos de hoje atualizados: lê-os no arranque e depois a cada 5 minutos.
- * (Quando houver a navegação entre dias, lê também o dia que estiveres a ver.)
+ * Mantém os compromissos atualizados: no arranque e depois a cada 5 minutos,
+ * lê os de hoje e os do dia mostrado na linha do tempo (se for outro).
  */
 import { useEffect } from 'react';
 import { hoje } from '../lib/tempo';
@@ -10,12 +10,16 @@ const CINCO_MINUTOS = 5 * 60_000;
 
 export function useCalendarios() {
   const carregado = useLoja(s => s.carregado);
-  const carregarEventos = useLoja(s => s.carregarEventos);
 
   useEffect(() => {
     if (!carregado) return;
-    carregarEventos(hoje());
-    const id = setInterval(() => carregarEventos(hoje()), CINCO_MINUTOS);
+    const ler = () => {
+      const { dia, carregarEventos } = useLoja.getState();
+      carregarEventos(hoje());
+      if (dia !== hoje()) carregarEventos(dia);
+    };
+    ler();
+    const id = setInterval(ler, CINCO_MINUTOS);
     return () => clearInterval(id); // ao sair, desliga o temporizador
-  }, [carregado, carregarEventos]);
+  }, [carregado]);
 }

@@ -38,6 +38,9 @@ src/
     roda.ts             geometria e textos da roda
     tempoEscrito.ts     o campo onde se escreve o tempo (algarismos que entram pela direita)
     sons.ts             os sons dos avisos (sintetizados com Web Audio)
+    plano.ts            o plano de cada dia: metas que faltam, onde cabe um bloco, «Preencher o dia»,
+                        encher um dia com a semana ativa
+    linhaDoTempo.ts     geometria da linha do tempo (faixas, píxeis por minuto, intervalo de horas)
   estado/               estado partilhado
     loja.ts             a «loja» (Zustand): dados, definições e ações (começar, parar…); grava sozinha
     useAgora.ts         relógio partilhado que atualiza a cada segundo
@@ -45,12 +48,18 @@ src/
     avisos.ts           avisar() (mensagens no canto) e confirmar() («Tens a certeza?»)
     notificar.ts        aviso importante: som + aviso laranja + notificação do Windows
     useAlertas.ts       avisos automáticos (fim do tempo, compromissos, blocos do plano)
-    useCalendarios.ts   lê os compromissos de hoje no arranque e a cada 5 minutos
+    useCalendarios.ts   lê os compromissos (hoje e o dia mostrado) no arranque e a cada 5 minutos
+    useAtalhos.ts       teclas 1–9 (começar) e Espaço (parar)
+    acoesPlano.ts       ações do plano (juntar, mover, apagar, preencher, limpar — com «Desfazer»)
+                        e a navegação entre dias (irPara)
   componentes/
     ui/Botao.tsx        botão base (normal, principal, parar, fantasma)
     ui/Avisos.tsx       desenha os avisos e a janela de confirmação
     ui/Cartao.tsx       cartão base (título em maiúsculas + botões à direita)
-    topo/               botões do topo: BotaoSom (🔊/🔇) e BotaoNotificacoes (🔔)
+    ui/MenuFlutuante.tsx  menu que aparece junto ao rato (fecha ao clicar fora / Esc; teclas 1–9)
+    topo/               Topo (barra fixa com ‹ Hoje ›), BotaoSom (🔊/🔇) e BotaoNotificacoes (🔔)
+    linha-do-tempo/     CartaoLinhaDoTempo, LinhaDoTempo (desenho e rato), MenusDoPlano,
+                        ListaAtividades e ResumoPlano (chips das metas)
     agenda/             CartaoAgenda («Agenda de hoje»)
     roda/               cartão da roda: Roda, EditorTempo, NomeAtividade, MetaDoDia,
                         OutraACorrer, ASeguir e CartaoRoda (junta tudo)

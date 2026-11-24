@@ -99,3 +99,16 @@ export function lerDuracao(texto: string): number | null {
   if (m && (m[1] || m[2] || m[3])) return (+m[1] || 0) * 60 + (+m[2] || 0) + (+m[3] || 0) / 60;
   return null;
 }
+
+/** «Hoje, segunda-feira, 23 nov», «Amanhã, …», «Ontem, …» ou só a data. */
+export function rotuloDoDia(dia: Dia): string {
+  const texto = new Date(inicioDoDia(dia)).toLocaleDateString('pt-PT', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'short'
+  });
+  if (dia === hoje()) return 'Hoje, ' + texto;
+  if (dia === somarDias(hoje(), -1)) return 'Ontem, ' + texto;
+  if (dia === somarDias(hoje(), 1)) return 'Amanhã, ' + texto;
+  return texto;
+}

@@ -57,6 +57,10 @@ interface Loja {
   erro: string | null;
   /** Compromissos já lidos dos calendários, por dia (não vão para o dados.json). */
   eventos: Record<Dia, RespostaEventos>;
+  /** Dia escolhido no topo (‹ Hoje ›): é o que a linha do tempo mostra. */
+  dia: Dia;
+  /** Atividade a ser arrastada dos cartões para a linha do tempo (null = nenhuma). */
+  atividadeArrastada: number | null;
 
   /** Lê definições e dados do servidor e arruma os dados antigos. Corre uma vez, no arranque. */
   carregar: () => Promise<void>;
@@ -94,6 +98,8 @@ export const useLoja = create<Loja>()(
     carregado: false,
     erro: null,
     eventos: {},
+    dia: hoje(),
+    atividadeArrastada: null,
 
     carregar: async () => {
       try {

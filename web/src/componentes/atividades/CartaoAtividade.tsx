@@ -6,6 +6,7 @@
  * - Arrastar: leva a atividade para a coluna Plano da linha do tempo.
  */
 import type { CSSProperties, DragEvent } from 'react';
+import { comecarArrastoDeAtividade, terminarArrastoDeAtividade } from '../../estado/acoesPlano';
 import { useAgora } from '../../estado/useAgora';
 import { useLoja } from '../../estado/loja';
 import { corDe, totalNoDia } from '../../lib/consultas';
@@ -33,6 +34,8 @@ export function CartaoAtividade({ atividade: a, indice, escolhida }: Props) {
   const progresso = a.goal ? Math.min(100, (feito / (a.goal * MIN)) * 100) : 0;
 
   function aoArrastar(e: DragEvent) {
+    // num dia que já passou não se planeia: cancela o arrasto
+    if (!comecarArrastoDeAtividade(a.id)) return e.preventDefault();
     e.dataTransfer.setData(TIPO_ARRASTO_ATIVIDADE, String(a.id));
     e.dataTransfer.setData('text/plain', a.name);
     e.dataTransfer.effectAllowed = 'copy';
@@ -43,6 +46,7 @@ export function CartaoAtividade({ atividade: a, indice, escolhida }: Props) {
       type="button"
       draggable
       onDragStart={aoArrastar}
+      onDragEnd={terminarArrastoDeAtividade}
       onClick={() => escolher(a.id)}
       onDoubleClick={e => {
         e.preventDefault();
