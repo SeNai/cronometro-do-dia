@@ -4,7 +4,8 @@ Organização:
   config.py           caminhos, JSON e definições
   calendario.py       leitura de calendários iCal (só leitura)
   google_calendar.py  escrita dos blocos no Google Calendar (opcional)
-  rotas.py            pedidos HTTP: interface (static/) e API JSON
+  rotas.py            pedidos HTTP: interface (web/dist/) e API JSON
+  interface.py        gera a interface React (npm run build) quando é preciso
 
 Uso (ver app.py e abrir.pyw):
   srv = criar_servidor()      # None se a porta já estiver ocupada (app já aberta)

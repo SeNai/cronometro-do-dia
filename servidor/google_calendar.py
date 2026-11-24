@@ -34,7 +34,7 @@ GSCOPES = ["https://www.googleapis.com/auth/calendar.app.created"]
 GAPI = "https://www.googleapis.com/calendar/v3"
 GCAL_NOME = "Cronómetro do Dia"
 
-# Mesma paleta de static/js/nucleo/util.js, para escolher a cor do Google mais parecida.
+# Mesma paleta de web/src/lib/consultas.ts, para escolher a cor do Google mais parecida.
 COLORS = ['#2f8f78', '#3b6ea8', '#d06a3a', '#8a5aa8', '#c99a22', '#4f8a3a', '#b8456a', '#2f8f9a']
 GOOGLE_CORES = {"1": "#7986cb", "2": "#33b679", "3": "#8e24aa", "4": "#e67c73", "5": "#f6bf26", "6": "#f4511e",
                 "7": "#039be5", "8": "#616161", "9": "#3f51b5", "10": "#0b8043", "11": "#d50000"}

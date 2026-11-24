@@ -1,4 +1,4 @@
-"""Pedidos HTTP: ficheiros da interface (static/) e a API JSON usada pelo browser.
+"""Pedidos HTTP: ficheiros da interface (web/dist/, gerada pelo Vite) e a API JSON usada pelo browser.
 
 API
   GET  /api/ping              → a app está a correr? (usado pelo abrir.pyw)
@@ -40,6 +40,17 @@ MIME = {
 }
 
 
+# Página mostrada se a interface ainda não foi gerada (web/dist não existe).
+SEM_INTERFACE = """<!doctype html><meta charset="utf-8"><title>Cronómetro do Dia</title>
+<body style="font:16px system-ui;max-width:560px;margin:60px auto;line-height:1.5">
+<h1>Falta gerar a interface</h1>
+<p>A interface da app está na pasta <code>web</code> e tem de ser gerada uma vez com o Node.js:</p>
+<pre style="background:#eee;padding:10px;border-radius:8px">cd web
+npm install
+npm run build</pre>
+<p>Depois volta a carregar esta página. (Se abrires a app pelo atalho, isto é feito sozinho.)</p></body>"""
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):  # sem registo de cada pedido no terminal
         pass
@@ -59,7 +70,9 @@ class Handler(BaseHTTPRequestHandler):
     # ------------------------------------------------------------ ficheiros da interface
 
     def send_static(self, path):
-        """Serve um ficheiro de static/ (sem deixar sair dessa pasta)."""
+        """Serve um ficheiro da interface gerada (sem deixar sair dessa pasta)."""
+        if not (STATIC / "index.html").exists():
+            return self.send(503, SEM_INTERFACE, "text/html; charset=utf-8")
         rel = unquote(path).lstrip("/") or "index.html"
         f = (STATIC / rel).resolve()
         if STATIC.resolve() not in f.parents or not f.is_file():

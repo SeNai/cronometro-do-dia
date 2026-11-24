@@ -1,0 +1,85 @@
+/*
+ * Estilos globais: o Tailwind e as cores da app.
+ *
+ * As cores são variáveis CSS (--bg, --accent, …) que mudam sozinhas com o tema
+ * claro/escuro do Windows. O bloco @theme liga-as ao Tailwind, e assim podes
+ * escrever classes como `bg-surface`, `text-mute` ou `border-line` nos componentes.
+ */
+@import 'tailwindcss';
+
+:root {
+  --bg: #f2f3f0;
+  --surface: #ffffff;
+  --surface2: #f6f7f4;
+  --ink: #17181a;
+  --mute: #6b6f76;
+  --faint: #a3a7ad;
+  --line: #e4e5e0;
+  --accent: #2f8f78;
+  --warn: #d06a3a;
+  --ev: #e7eef8;
+  --evb: #3b6ea8;
+  --shadow: 0 1px 2px #0000000a, 0 6px 24px #0000000d;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1012;
+    --surface: #171a1d;
+    --surface2: #1e2226;
+    --ink: #eceef0;
+    --mute: #9aa0a7;
+    --faint: #5c636b;
+    --line: #272c31;
+    --accent: #4cc2a0;
+    --warn: #f0905e;
+    --ev: #1c2838;
+    --evb: #6f9fdc;
+    --shadow: 0 1px 2px #0006, 0 8px 30px #0005;
+    color-scheme: dark;
+  }
+}
+
+/* «inline» faz as classes usarem var(--…) diretamente, por isso seguem o tema. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface2);
+  --color-ink: var(--ink);
+  --color-mute: var(--mute);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-warn: var(--warn);
+  --color-ev: var(--ev);
+  --color-evb: var(--evb);
+  --shadow-cartao: var(--shadow);
+  --radius-cartao: 18px;
+  --font-sans: 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  --font-num: 'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif;
+
+  /* `animate-brilho`: pulsa devagar (arco da roda e pontos de «a correr») */
+  --animate-brilho: brilho 2.4s ease-in-out infinite;
+  @keyframes brilho {
+    50% {
+      opacity: 0.82;
+    }
+  }
+
+  /* `animate-entrar`: aparece a subir um pouco (avisos) */
+  --animate-entrar: entrar 0.2s ease-out;
+  @keyframes entrar {
+    from {
+      transform: translateY(8px);
+      opacity: 0;
+    }
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14.5px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
