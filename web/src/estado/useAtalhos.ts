@@ -3,7 +3,7 @@
  *   1–9    começa (ou para) a 1.ª–9.ª atividade
  *   Espaço para a atividade que está a correr
  *
- * Não reagem enquanto se escreve num campo, nem com um menu ou uma janela abertos
+ * Não reagem enquanto se escreve num campo, nem com um menu ou uma janela (Definições, confirmação) abertos
  * (nos menus do plano, 1–9 escolhem a atividade — ver MenuFlutuante).
  */
 import { useEffect } from 'react';
@@ -18,7 +18,7 @@ export function useAtalhos() {
         e.ctrlKey ||
         e.metaKey ||
         e.altKey ||
-        document.querySelector('[data-menu-flutuante], [role="alertdialog"]')
+        document.querySelector('[data-menu-flutuante], [role="alertdialog"], [role="dialog"]')
       )
         return;
       const { dados, comecar, parar } = useLoja.getState();

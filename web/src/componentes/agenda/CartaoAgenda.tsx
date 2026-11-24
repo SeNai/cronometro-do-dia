@@ -77,7 +77,16 @@ export function CartaoAgenda() {
           <div className="mt-2 text-mute">Dia todo: {diaTodo.map(e => e.titulo).join(', ')}</div>
         )}
         {!temCalendarios && !ev.length && (
-          <div className="mt-2 text-mute">Ainda não ligaste nenhum calendário (em ⚙ Definições).</div>
+          <div className="mt-2 text-mute">
+            Ainda não ligaste nenhum calendário.{' '}
+            <button
+              type="button"
+              className="cursor-pointer text-accent underline"
+              onClick={() => useLoja.setState({ definicoesAbertas: true })}
+            >
+              Ligar calendário
+            </button>
+          </div>
         )}
         {resposta.erros.map(erro => (
           <div key={erro} className="mt-2 text-warn">

@@ -4,23 +4,27 @@
  * Estrutura: o topo, a barra lateral (separadores) e o separador escolhido:
  *   Hoje   → roda, atividades, agenda e linha do tempo
  *   Planos → semanas e planos do dia
- *   Resumo e Registo → (vêm no próximo passo)
+ *   Resumo → o dia escolhido e os últimos 7 dias
+ *   Registo → os blocos feitos no dia escolhido
  */
 import { useEffect } from 'react';
 import { CartaoAgenda } from './componentes/agenda/CartaoAgenda';
 import { CartaoAtividades } from './componentes/atividades/CartaoAtividades';
 import { CartaoLinhaDoTempo } from './componentes/linha-do-tempo/CartaoLinhaDoTempo';
+import { JanelaDefinicoes } from './componentes/definicoes/JanelaDefinicoes';
 import { SeparadorPlanos } from './componentes/planos/SeparadorPlanos';
+import { SeparadorRegisto } from './componentes/resumo/SeparadorRegisto';
+import { SeparadorResumo } from './componentes/resumo/SeparadorResumo';
 import { CartaoRoda } from './componentes/roda/CartaoRoda';
 import { BarraLateral } from './componentes/topo/BarraLateral';
 import { Topo } from './componentes/topo/Topo';
 import { Avisos, Confirmacao } from './componentes/ui/Avisos';
-import { Cartao } from './componentes/ui/Cartao';
 import { irPara } from './estado/acoesPlano';
 import { useLoja } from './estado/loja';
 import { useAlertas } from './estado/useAlertas';
 import { useAtalhos } from './estado/useAtalhos';
 import { useCalendarios } from './estado/useCalendarios';
+import { useGoogle } from './estado/useGoogle';
 import { useTituloDaJanela } from './estado/useTituloDaJanela';
 import { hoje } from './lib/tempo';
 
@@ -45,6 +49,7 @@ export default function App() {
   const carregado = useLoja(s => s.carregado);
   const erro = useLoja(s => s.erro);
   const vista = useLoja(s => s.vista);
+  const definicoesAbertas = useLoja(s => s.definicoesAbertas);
 
   // corre uma vez, quando a app aparece
   useEffect(() => {
@@ -60,6 +65,7 @@ export default function App() {
   useCalendarios(); // compromissos, relidos a cada 5 min
   useAlertas(); // avisos automáticos, verificados a cada segundo
   useAtalhos(); // teclas 1–9 e Espaço
+  useGoogle(); // estado da ligação ao Google, a cada minuto
 
   return (
     <>
@@ -70,13 +76,11 @@ export default function App() {
           {erro && <p className="mb-4 rounded-cartao bg-surface p-4 text-warn shadow-cartao">{erro}</p>}
           {carregado && vista === 'hoje' && <SeparadorHoje />}
           {carregado && vista === 'planos' && <SeparadorPlanos />}
-          {carregado && (vista === 'stats' || vista === 'log') && (
-            <Cartao titulo={vista === 'stats' ? 'Resumo' : 'Registo'}>
-              <p className="text-mute">Este separador chega no próximo passo.</p>
-            </Cartao>
-          )}
+          {carregado && vista === 'stats' && <SeparadorResumo />}
+          {carregado && vista === 'log' && <SeparadorRegisto />}
         </main>
       </div>
+      {definicoesAbertas && <JanelaDefinicoes />}
       <Avisos />
       <Confirmacao />
     </>

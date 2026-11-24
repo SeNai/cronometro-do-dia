@@ -54,3 +54,13 @@ export const lerEventos = (dia: Dia, refrescar = false) =>
 
 /** Estado da ligação ao Google. */
 export const lerEstadoGoogle = () => pedir<EstadoGoogle>('/api/google/estado');
+
+/** Guarda o ficheiro de credenciais OAuth do Google (o JSON transferido da Google Cloud). */
+export const enviarCredenciaisGoogle = (json: unknown) =>
+  pedir<EstadoGoogle>('/api/google/credenciais', json);
+
+/** Começa a ligação à conta Google (o servidor abre o browser para autorizar). */
+export const ligarGoogle = () => pedir<EstadoGoogle>('/api/google/ligar', {});
+
+/** Desliga a conta Google (os blocos já enviados ficam lá). */
+export const desligarGoogle = () => pedir<EstadoGoogle>('/api/google/desligar', {});

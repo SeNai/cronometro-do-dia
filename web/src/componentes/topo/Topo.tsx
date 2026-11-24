@@ -1,12 +1,14 @@
 /*
  * Barra do topo (fica fixa ao fazer scroll): nome da app, escolha do dia (‹ Hoje ›),
- * e os botões dos avisos e do som. (As Definições e o Google entram aqui mais tarde.)
+ * o chip do Google, e os botões dos avisos, do som e das Definições.
  */
 import { irPara } from '../../estado/acoesPlano';
 import { useLoja } from '../../estado/loja';
 import { hoje, rotuloDoDia, somarDias } from '../../lib/tempo';
+import { Botao } from '../ui/Botao';
 import { BotaoNotificacoes } from './BotaoNotificacoes';
 import { BotaoSom } from './BotaoSom';
+import { ChipGoogle } from './ChipGoogle';
 
 /** O ícone da app (o mesmo do atalho). */
 function Logotipo() {
@@ -55,8 +57,10 @@ export function Topo() {
           Cronómetro do Dia
         </div>
         <EscolherDia />
+        <ChipGoogle />
         <BotaoNotificacoes />
         <BotaoSom />
+        <Botao onClick={() => useLoja.setState({ definicoesAbertas: true })}>⚙ Definições</Botao>
       </div>
     </header>
   );

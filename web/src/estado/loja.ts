@@ -18,7 +18,7 @@
  */
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { alterarConfig, gravarDados, lerConfig, lerDados, lerEventos } from '../api';
+import { alterarConfig, gravarDados, lerConfig, lerDados, lerEstadoGoogle, lerEventos } from '../api';
 import {
   atividadeNaRoda,
   atividadePorId,
@@ -29,7 +29,7 @@ import {
 import { normalizarDados } from '../lib/migracoes';
 import type { PlanoAberto } from '../lib/planos';
 import { ESCALA_RODA, MIN, PASSO_RODA, curto, hoje, horaMinuto, limitar, novoUid } from '../lib/tempo';
-import type { Atividade, Bloco, Config, Dados, Dia, RespostaEventos } from '../tipos';
+import type { Atividade, Bloco, Config, Dados, Dia, EstadoGoogle, RespostaEventos } from '../tipos';
 import { avisar } from './avisos';
 
 /** Os separadores da barra lateral. */
@@ -83,6 +83,10 @@ interface Loja {
   vista: Vista;
   /** Plano do dia ou semana aberta no editor do separador Planos. Lembrado no browser. */
   planoAberto: PlanoAberto | null;
+  /** A janela das Definições está aberta? */
+  definicoesAbertas: boolean;
+  /** Estado da ligação ao Google (null = ainda não se sabe ou o servidor não respondeu). */
+  google: EstadoGoogle | null;
 
   /** Lê definições e dados do servidor e arruma os dados antigos. Corre uma vez, no arranque. */
   carregar: () => Promise<void>;
@@ -102,8 +106,10 @@ interface Loja {
 
   /** Lê os compromissos de um dia. `refrescar` volta a descarregar os calendários (sem cache). */
   carregarEventos: (dia: Dia, refrescar?: boolean) => Promise<void>;
-  /** Muda algumas definições (já, no ecrã) e grava-as no servidor. */
-  alterarConfig: (mudancas: Partial<Config>) => Promise<void>;
+  /** Muda algumas definições (já, no ecrã) e grava-as no servidor. Devolve false se não conseguiu gravar. */
+  alterarConfig: (mudancas: Partial<Config>) => Promise<boolean>;
+  /** Pergunta ao servidor o estado da ligação ao Google. */
+  carregarGoogle: () => Promise<void>;
 
   /** Muda o nome, a cor ou a meta de uma atividade. */
   alterarAtividade: (id: number, mudancas: Partial<Pick<Atividade, 'name' | 'color' | 'goal'>>) => void;
@@ -124,6 +130,8 @@ export const useLoja = create<Loja>()(
     atividadeArrastada: null,
     vista: lerDoBrowser<Vista>('vista', 'hoje'),
     planoAberto: lerDoBrowser<PlanoAberto | null>('planoAberto', null),
+    definicoesAbertas: false,
+    google: null,
 
     carregar: async () => {
       try {
@@ -195,8 +203,18 @@ export const useLoja = create<Loja>()(
       try {
         const config = await alterarConfig(mudancas);
         set({ config: { ...config, ...mudancas } });
+        return true;
       } catch {
         avisar('Não consegui guardar as definições.', { tipo: 'alerta' });
+        return false;
+      }
+    },
+
+    carregarGoogle: async () => {
+      try {
+        set({ google: await lerEstadoGoogle() });
+      } catch {
+        set({ google: null });
       }
     },
 

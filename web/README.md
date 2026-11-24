@@ -42,6 +42,7 @@ src/
                         encher um dia com a semana ativa
     linhaDoTempo.ts     geometria da linha do tempo (faixas, píxeis por minuto, intervalo de horas)
     planos.ts           planos guardados: planos do dia e semanas (resumos, converter para um dia, encaixar)
+    resumo.ts           contas dos separadores Resumo e Registo (totais, últimos 7 dias, texto para copiar)
   estado/               estado partilhado
     loja.ts             a «loja» (Zustand): dados, definições e ações (começar, parar…); grava sozinha
     useAgora.ts         relógio partilhado que atualiza a cada segundo
@@ -51,6 +52,7 @@ src/
     useAlertas.ts       avisos automáticos (fim do tempo, compromissos, blocos do plano)
     useCalendarios.ts   lê os compromissos (hoje e o dia mostrado) no arranque e a cada 5 minutos
     useAtalhos.ts       teclas 1–9 (começar) e Espaço (parar)
+    useGoogle.ts        estado da ligação ao Google (a cada minuto e ao voltar à janela)
     acoesPlano.ts       ações do plano (juntar, mover, apagar, preencher, limpar — com «Desfazer»)
                         e a navegação entre dias (irPara)
     acoesPlanos.ts      planos guardados: aplicar a um dia, semana ativa, criar, mudar, copiar,
@@ -60,8 +62,11 @@ src/
     ui/Avisos.tsx       desenha os avisos e a janela de confirmação
     ui/Cartao.tsx       cartão base (título em maiúsculas + botões à direita)
     ui/MenuFlutuante.tsx  menu que aparece junto ao rato (fecha ao clicar fora / Esc; teclas 1–9)
-    topo/               Topo (barra fixa com ‹ Hoje ›), BarraLateral (separadores), BotaoSom (🔊/🔇)
-                        e BotaoNotificacoes (🔔)
+    ui/Janela.tsx       janela por cima da app (Definições, copiar resumo)
+    topo/               Topo (barra fixa com ‹ Hoje ›), BarraLateral (separadores), BotaoSom (🔊/🔇),
+                        BotaoNotificacoes (🔔) e ChipGoogle («✓ Google»)
+    definicoes/         JanelaDefinicoes (rascunho → Guardar) e SeccaoGoogle (ligar a conta)
+    resumo/             SeparadorResumo (dia + últimos 7 dias) e SeparadorRegisto (blocos, copiar resumo)
     linha-do-tempo/     CartaoLinhaDoTempo, LinhaDoTempo (desenho e rato), MenusDoPlano,
                         ListaAtividades, ResumoPlano (chips das metas) e MenuPlanos («📋 Planos»)
     planos/             SeparadorPlanos (listas + editor), EditorPlano (cabeçalho, paleta, dias),
