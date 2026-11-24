@@ -15,7 +15,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': 'http://127.0.0.1:8765'
+      // API=http://127.0.0.1:8799 npm run dev:vite → usa outro servidor (ex.: um de testes)
+      '/api': process.env.API ?? 'http://127.0.0.1:8765'
     }
   }
 });

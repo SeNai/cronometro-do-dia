@@ -24,13 +24,28 @@ e mantém-no ligado enquanto o Vite estiver aberto (ver `scripts/dev.mjs`).
 
 ## Estrutura
 
-| Ficheiro | O que é |
-|---|---|
-| `index.html` | A página; o React desenha tudo dentro de `<div id="root">` |
-| `src/main.tsx` | Ponto de entrada |
-| `src/App.tsx` | Componente principal |
-| `src/tipos.ts` | Tipos dos dados (o que o servidor devolve e grava) |
-| `src/api.ts` | Funções para falar com o servidor |
-| `src/index.css` | Tailwind e as cores da app (tema claro/escuro) |
-| `scripts/dev.mjs` | O que o `npm run dev` corre: liga o servidor Python e o Vite |
-| `vite.config.ts` | Configuração do Vite (inclui o reencaminhamento de `/api` para o servidor Python) |
+```
+src/
+  main.tsx              ponto de entrada (desenha o App dentro de <div id="root">)
+  App.tsx               componente principal: carrega os dados e monta o ecrã
+  index.css             Tailwind + cores da app (tema claro/escuro)
+  tipos.ts              tipos dos dados (o que o servidor devolve e grava)
+  api.ts                funções para falar com o servidor Python
+  lib/                  lógica pura (sem React): fácil de ler e de testar
+    tempo.ts            datas e formatação de tempos
+    consultas.ts        perguntas sobre os dados (cor, tempo feito, duração sugerida…)
+    migracoes.ts        arruma dados de versões antigas
+    roda.ts             geometria e textos da roda
+  estado/               estado partilhado
+    loja.ts             a «loja» (Zustand): dados, definições e ações (começar, parar…); grava sozinha
+    useAgora.ts         relógio partilhado que atualiza a cada segundo
+    useTituloDaJanela.ts  o tempo no título da janela
+  componentes/
+    ui/Botao.tsx        botão base (normal, principal, parar, fantasma)
+    roda/               cartão da roda: Roda, MetaDoDia, OutraACorrer, ASeguir, CartaoRoda
+scripts/dev.mjs         o que o `npm run dev` corre (servidor Python + Vite)
+vite.config.ts          configuração do Vite (reencaminha /api para o servidor Python)
+```
+
+**Regra de ouro:** a lógica vai para `lib/` (funções puras) ou para as ações da `loja.ts`;
+os componentes só mostram dados e chamam ações.

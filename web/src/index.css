@@ -57,6 +57,14 @@
   --radius-cartao: 18px;
   --font-sans: 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
   --font-num: 'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif;
+
+  /* `animate-brilho`: pulsa devagar (arco da roda e pontos de «a correr») */
+  --animate-brilho: brilho 2.4s ease-in-out infinite;
+  @keyframes brilho {
+    50% {
+      opacity: 0.82;
+    }
+  }
 }
 
 body {

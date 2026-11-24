@@ -1,56 +1,67 @@
 /*
- * Componente principal (provisório).
+ * Componente principal: carrega os dados no arranque e monta o ecrã.
  *
- * Por agora só prova que a ligação funciona: lê os dados e as definições do servidor
- * Python e mostra as atividades. As partes da app (roda, cartões, linha do tempo…)
- * vão ser acrescentadas aqui, uma a uma.
+ * Por agora tem a roda e uma lista simples de atividades (provisória) para a testar:
+ * um clique escolhe a atividade, duplo clique começa-a.
+ * Os cartões verdadeiros, a agenda e a linha do tempo vêm nos próximos passos.
  */
-import { useEffect, useState } from 'react';
-import { lerConfig, lerDados } from './api';
-import type { Atividade, Config } from './tipos';
+import { useEffect, type CSSProperties } from 'react';
+import { CartaoRoda } from './componentes/roda/CartaoRoda';
+import { useLoja } from './estado/loja';
+import { useTituloDaJanela } from './estado/useTituloDaJanela';
+import { atividadeNaRoda, corDe } from './lib/consultas';
 
 export default function App() {
-  // Estado do componente: quando muda, o React volta a desenhar o ecrã sozinho.
-  const [atividades, setAtividades] = useState<Atividade[]>([]);
-  const [config, setConfig] = useState<Config | null>(null);
-  const [erro, setErro] = useState<string | null>(null);
+  const carregar = useLoja(s => s.carregar);
+  const carregado = useLoja(s => s.carregado);
+  const erro = useLoja(s => s.erro);
+  const dados = useLoja(s => s.dados);
+  const escolher = useLoja(s => s.escolher);
+  const comecar = useLoja(s => s.comecar);
 
-  // useEffect com [] corre uma vez, quando o componente aparece no ecrã.
+  // corre uma vez, quando a app aparece
   useEffect(() => {
-    Promise.all([lerDados(), lerConfig()])
-      .then(([dados, cfg]) => {
-        setAtividades(dados.acts ?? []);
-        setConfig(cfg);
-      })
-      .catch(() =>
-        setErro('Não consegui falar com o servidor. Abre a app pelo atalho e volta a carregar esta página.')
-      );
-  }, []);
+    carregar();
+  }, [carregar]);
+
+  useTituloDaJanela();
+
+  const naRoda = atividadeNaRoda(dados);
 
   return (
-    <main className="mx-auto max-w-xl p-8">
-      <h1 className="mb-1 text-2xl font-semibold">⏱ Cronómetro do Dia</h1>
-      <p className="mb-6 text-mute">Nova interface (React + TypeScript + Tailwind) — em construção.</p>
-
+    <main className="mx-auto grid max-w-md gap-4 p-6">
       {erro && <p className="rounded-cartao bg-surface p-4 text-warn shadow-cartao">{erro}</p>}
 
-      <ul className="grid gap-2">
-        {atividades.map(a => (
-          <li key={a.id} className="flex items-center gap-3 rounded-cartao bg-surface p-4 shadow-cartao">
-            <span
-              className="size-3 rounded-full bg-accent"
-              style={a.color ? { background: a.color } : undefined}
-            />
-            <b className="flex-1 font-medium">{a.name}</b>
-            <span className="font-num text-mute tabular-nums">meta {a.goal} min</span>
-          </li>
-        ))}
-      </ul>
+      {carregado && (
+        <>
+          <CartaoRoda />
 
-      {config && (
-        <p className="mt-6 text-sm text-faint">
-          Dia de {config.inicio_do_dia} a {config.fim_do_dia} · {config.calendarios.length} calendário(s)
-        </p>
+          {/* provisório: será substituído pelos cartões das atividades */}
+          <section className="rounded-cartao border border-line bg-surface p-4.5 shadow-cartao">
+            <h2 className="mb-3 text-[13px] font-[650] tracking-[0.04em] text-mute uppercase">Atividades</h2>
+            <ul className="grid gap-2">
+              {dados.acts.map(a => (
+                <li key={a.id}>
+                  <button
+                    type="button"
+                    onClick={() => escolher(a.id)}
+                    onDoubleClick={() => comecar(a.id)}
+                    style={{ '--c': corDe(a) } as CSSProperties}
+                    className={`flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left ${
+                      naRoda?.id === a.id
+                        ? 'border-[var(--c)] shadow-[inset_0_0_0_1px_var(--c)]'
+                        : 'border-line'
+                    }`}
+                  >
+                    <span className="size-2.5 rounded-full bg-[var(--c)]" />
+                    <b className="flex-1 font-medium">{a.name}</b>
+                    {dados.run?.id === a.id && <span className="text-xs text-mute">a correr</span>}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </>
       )}
     </main>
   );
