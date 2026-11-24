@@ -10,6 +10,7 @@ import { atividadeNaRoda, corDe, corridaNaRoda } from '../../lib/consultas';
 import { Botao } from '../ui/Botao';
 import { ASeguir } from './ASeguir';
 import { MetaDoDia } from './MetaDoDia';
+import { NomeAtividade } from './NomeAtividade';
 import { OutraACorrer } from './OutraACorrer';
 import { Roda } from './Roda';
 
@@ -40,7 +41,7 @@ export function CartaoRoda() {
 
       <div className="mt-2.5 flex items-center justify-center gap-2 text-lg font-[650]">
         <span className="size-3 rounded-full" style={{ background: cor }} />
-        <span>{atividade?.name ?? 'Cria uma atividade'}</span>
+        <NomeAtividade key={atividade?.id} atividade={atividade} />
       </div>
 
       <div className="mt-3.5 flex justify-center">

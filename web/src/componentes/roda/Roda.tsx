@@ -3,6 +3,7 @@
  *
  * Arrastar o botão (ou clicar no anel) escolhe a duração, de 5 em 5 minutos.
  * Com o botão focado, as setas mudam ±5 min e PageUp/PageDown ±15 min.
+ * Clicar nos números grandes abre o campo para escrever o tempo (EditorTempo).
  *
  * As cores vêm da variável CSS --c (cor da atividade), definida no cartão à volta.
  */
@@ -20,7 +21,9 @@ import {
   pontoNoAngulo,
   semSaltoNoTopo
 } from '../../lib/roda';
-import { PASSO_RODA, duracaoPorExtenso } from '../../lib/tempo';
+import { DICAS, MAXIMO_ESCRITO } from '../../lib/tempoEscrito';
+import { MIN, PASSO_RODA, duracaoPorExtenso } from '../../lib/tempo';
+import { EditorTempo } from './EditorTempo';
 
 /** Um arco da roda, preenchido numa fração (0–1). */
 function Arco({ fracao, cor, semAnimacao }: { fracao: number; cor: string; semAnimacao: boolean }) {
@@ -58,6 +61,26 @@ export function Roda() {
   const svg = useRef<SVGSVGElement>(null);
   const ultimo = useRef(0); // último valor ao arrastar (para não saltar no topo)
   const [aArrastar, setAArrastar] = useState(false);
+  const [aEscrever, setAEscrever] = useState(false);
+  const [dica, setDica] = useState(DICAS.parado);
+
+  function abrirEditor() {
+    if (!atividade) return;
+    setDica(corrida ? DICAS.aCorrer : DICAS.parado);
+    setAEscrever(true);
+  }
+
+  /** O campo abre com o que está nos números: a duração, ou quanto falta (vazio se for ∞ ou tempo extra). */
+  const inicialDoEditor =
+    m.excedido || !alvo ? null : corrida ? (alvo * MIN - (agora - corrida.start)) / MIN : alvo;
+
+  /** Aplica o tempo escrito. Com o cronómetro a correr, o que se escreve é quanto falta. */
+  function aplicarTempo(minutos: number) {
+    const decorrido = corrida ? (Date.now() - corrida.start) / MIN : 0;
+    const total = corrida && minutos > 0 ? decorrido + minutos : minutos;
+    definirDuracao(Math.round(total * 60) / 60, MAXIMO_ESCRITO + decorrido);
+    return true;
+  }
 
   function aoCarregar(e: PointerEvent<SVGSVGElement>) {
     if (!svg.current || !atividade) return;
@@ -165,15 +188,38 @@ export function Roda() {
 
       {/* números no centro (pointer-events-none: os cliques passam para a roda) */}
       <div className="pointer-events-none absolute inset-[22%] flex flex-col items-center justify-center">
-        <div className="text-xs tracking-[0.06em] text-mute uppercase">{m.rotulo}</div>
-        <div
-          className={`font-num text-[52px] leading-[1.05] font-semibold tracking-tight tabular-nums ${
-            m.excedido ? 'text-warn' : ''
-          }`}
-        >
-          {m.grande}
+        <div className="text-xs tracking-[0.06em] text-mute uppercase">
+          {aEscrever ? (corrida ? 'Faltam' : 'Duração') : m.rotulo}
         </div>
-        <div className="mt-0.5 font-num text-[13px] text-mute tabular-nums">{m.sub}</div>
+        {aEscrever ? (
+          <EditorTempo
+            inicial={inicialDoEditor}
+            aCorrer={!!corrida}
+            aoAplicar={aplicarTempo}
+            aoFechar={() => setAEscrever(false)}
+            aoMudarDica={setDica}
+          />
+        ) : (
+          <div
+            role="button"
+            tabIndex={0}
+            title="Clica para escrever o tempo (ex.: 6:34)"
+            onClick={abrirEditor}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                abrirEditor();
+              }
+            }}
+            className={`pointer-events-auto cursor-text rounded-xl px-1.5 font-num text-[52px] leading-[1.05] font-semibold tracking-tight tabular-nums outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--c)_12%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--c)_12%,transparent)] ${
+              m.excedido ? 'text-warn' : ''
+            }`}
+          >
+            {m.grande}
+          </div>
+        )}
+        <div className="mt-0.5 font-num text-[13px] text-mute tabular-nums">{aEscrever ? dica : m.sub}</div>
       </div>
     </div>
   );

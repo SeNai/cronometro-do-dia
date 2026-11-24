@@ -36,13 +36,19 @@ src/
     consultas.ts        perguntas sobre os dados (cor, tempo feito, duração sugerida…)
     migracoes.ts        arruma dados de versões antigas
     roda.ts             geometria e textos da roda
+    tempoEscrito.ts     o campo onde se escreve o tempo (algarismos que entram pela direita)
   estado/               estado partilhado
     loja.ts             a «loja» (Zustand): dados, definições e ações (começar, parar…); grava sozinha
     useAgora.ts         relógio partilhado que atualiza a cada segundo
     useTituloDaJanela.ts  o tempo no título da janela
+    avisos.ts           avisar() (mensagens no canto) e confirmar() («Tens a certeza?»)
   componentes/
     ui/Botao.tsx        botão base (normal, principal, parar, fantasma)
-    roda/               cartão da roda: Roda, MetaDoDia, OutraACorrer, ASeguir, CartaoRoda
+    ui/Avisos.tsx       desenha os avisos e a janela de confirmação
+    roda/               cartão da roda: Roda, EditorTempo, NomeAtividade, MetaDoDia,
+                        OutraACorrer, ASeguir e CartaoRoda (junta tudo)
+    atividades/         CartaoAtividades (a grelha e o ✎ Editar), CartaoAtividade (um cartão),
+                        LinhaEdicao (uma linha no modo de edição), SeletorMeta ([−] 90 min [+])
 scripts/dev.mjs         o que o `npm run dev` corre (servidor Python + Vite)
 vite.config.ts          configuração do Vite (reencaminha /api para o servidor Python)
 ```

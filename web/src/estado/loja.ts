@@ -22,7 +22,7 @@ import { gravarDados, lerConfig, lerDados } from '../api';
 import { atividadeNaRoda, atividadePorId, corridaNaRoda, duracaoSugerida } from '../lib/consultas';
 import { normalizarDados } from '../lib/migracoes';
 import { ESCALA_RODA, MIN, limitar, novoUid } from '../lib/tempo';
-import type { Config, Dados } from '../tipos';
+import type { Atividade, Config, Dados } from '../tipos';
 
 /** Definições por omissão, até chegarem as do servidor (iguais às de servidor/config.py). */
 const CONFIG_INICIAL: Config = {
@@ -62,6 +62,13 @@ interface Loja {
   parar: () => void;
   /** Muda a duração na roda (minutos). Com a atividade a correr, muda o tempo total do bloco. */
   definirDuracao: (minutos: number, maximo?: number) => void;
+
+  /** Muda o nome, a cor ou a meta de uma atividade. */
+  alterarAtividade: (id: number, mudancas: Partial<Pick<Atividade, 'name' | 'color' | 'goal'>>) => void;
+  /** Cria uma atividade nova (sem meta). */
+  adicionarAtividade: (nome: string) => void;
+  /** Remove uma atividade. Os blocos já registados ficam, e aparecem como «(removida)». */
+  removerAtividade: (id: number) => void;
 }
 
 export const useLoja = create<Loja>()(
@@ -130,6 +137,24 @@ export const useLoja = create<Loja>()(
           // se ainda não passou o novo tempo, volta a poder avisar quando acabar
           if (!m || Date.now() - r.start < m * MIN) r.alerted = false;
         }
+      });
+    },
+
+    alterarAtividade: (id, mudancas) =>
+      set(s => {
+        const a = atividadePorId(s.dados, id);
+        if (a) Object.assign(a, mudancas);
+      }),
+
+    adicionarAtividade: nome =>
+      set(s => {
+        s.dados.acts.push({ id: s.dados.next++, name: nome, goal: 0 });
+      }),
+
+    removerAtividade: id => {
+      if (get().dados.run?.id === id) get().parar();
+      set(s => {
+        s.dados.acts = s.dados.acts.filter(a => a.id !== id);
       });
     }
   }))

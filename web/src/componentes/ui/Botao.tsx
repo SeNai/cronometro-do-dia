@@ -6,11 +6,12 @@
  *   <Botao variante="parar">■ Parar</Botao>      (usa a cor --c do componente à volta)
  *   <Botao variante="fantasma" pequeno>✎ Editar</Botao>
  */
-import type { ButtonHTMLAttributes } from 'react';
+import type { ComponentProps } from 'react';
 
 type Variante = 'normal' | 'principal' | 'parar' | 'fantasma';
 
-interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
+// ComponentProps<'button'> = todas as propriedades de um <button> normal (onClick, title, ref…)
+interface Props extends ComponentProps<'button'> {
   variante?: Variante;
   pequeno?: boolean;
 }

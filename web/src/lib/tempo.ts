@@ -77,3 +77,25 @@ export const novoUid = () => Date.now().toString(36) + Math.random().toString(36
 
 /** Limita um número entre um mínimo e um máximo. */
 export const limitar = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
+
+/**
+ * Lê uma duração escrita à mão e devolve minutos (0 = sem limite), ou null se não perceber.
+ * Aceita: 6:34 · 1:06:34 · 6m34s · 6m34 · 6 min 34 s · 34s · 1h20 · 1h 20m · 6 34 · 45 · 6,5 · ∞
+ */
+export function lerDuracao(texto: string): number | null {
+  const s = texto.trim().toLowerCase().replace(',', '.').replace(/^\+/, '');
+  let m: RegExpMatchArray | null;
+  if (!s) return null;
+  if (s === '∞') return 0;
+  if ((m = s.match(/^(\d+):(\d{1,2}):(\d{1,2})$/))) return +m[1] * 60 + +m[2] + +m[3] / 60;
+  if ((m = s.match(/^(\d+):(\d{1,2})$/))) return +m[1] + +m[2] / 60;
+  if (/^\d+(\.\d+)?$/.test(s)) return +s;
+  if ((m = s.match(/^(\d+)\s+(\d{1,2})$/))) return +m[1] + +m[2] / 60;
+  if ((m = s.match(/^(\d+)\s*h\s*(\d{1,2})$/))) return +m[1] * 60 + +m[2];
+  if ((m = s.match(/^(\d+)\s*m(?:in)?\s*(\d{1,2})$/))) return +m[1] + +m[2] / 60;
+  m = s.match(
+    /^(?:(\d+(?:\.\d+)?)\s*h(?:oras?)?)?\s*(?:(\d+(?:\.\d+)?)\s*m(?:in(?:utos?)?)?)?\s*(?:(\d+)\s*s(?:eg(?:undos?)?)?)?$/
+  );
+  if (m && (m[1] || m[2] || m[3])) return (+m[1] || 0) * 60 + (+m[2] || 0) + (+m[3] || 0) / 60;
+  return null;
+}

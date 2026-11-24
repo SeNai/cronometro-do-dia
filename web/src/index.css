@@ -65,6 +65,15 @@
       opacity: 0.82;
     }
   }
+
+  /* `animate-entrar`: aparece a subir um pouco (avisos) */
+  --animate-entrar: entrar 0.2s ease-out;
+  @keyframes entrar {
+    from {
+      transform: translateY(8px);
+      opacity: 0;
+    }
+  }
 }
 
 body {
