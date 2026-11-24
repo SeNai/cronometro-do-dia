@@ -1,0 +1,5 @@
+icalendar>=5.0
+recurring-ical-events>=2.0
+google-auth>=2.20
+google-auth-oauthlib>=1.2
+requests>=2.31

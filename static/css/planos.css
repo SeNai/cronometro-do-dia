@@ -1,0 +1,180 @@
+/* Separador Planos: listas de semanas/planos do dia e o editor em grelha. */
+
+/* separador Planos */
+.pitem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 8px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  margin-bottom: 3px;
+}
+.pitem:hover {
+  background: var(--surface2);
+}
+.pitem.on {
+  background: var(--surface2);
+  border-color: var(--line);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.pitem .nm {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  grid-column: 2;
+}
+.pitem:not(:has(.mdots)) .nm {
+  grid-column: 1/3;
+}
+.pitem small {
+  grid-column: 1/-1;
+  color: var(--faint);
+  font-size: 12px;
+}
+.pitem .badge {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 99px;
+  padding: 1px 7px;
+}
+.pnone {
+  margin: 2px 4px 6px;
+}
+.pempty {
+  max-width: 560px;
+  line-height: 1.55;
+}
+.pempty h2 {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+.phead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.phead .kind {
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint);
+  width: 100%;
+}
+.phead .pname {
+  flex: 1 1 200px;
+  font-size: 17px;
+  font-weight: 650;
+  padding: 7px 11px;
+}
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+.palette .lbl {
+  color: var(--mute);
+  font-size: 12.5px;
+}
+.palette .pchip {
+  cursor: grab;
+  color: var(--ink);
+  padding: 5px 11px;
+  font-size: 13px;
+}
+.palette .pchip:hover {
+  border-color: var(--c);
+}
+.palette .hint {
+  color: var(--faint);
+  font-size: 12px;
+}
+.egrid {
+  display: grid;
+  gap: 0 4px;
+}
+.wkhead {
+  margin-bottom: 4px;
+}
+.ehd {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 4px 6px 8px;
+  border-radius: 9px;
+  background: var(--surface2);
+  min-width: 0;
+}
+.ehd b {
+  font-size: 13px;
+}
+.ehd small {
+  color: var(--faint);
+  font-size: 11.5px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ehd .x {
+  padding: 0 6px;
+  font-size: 15px;
+  line-height: 1.2;
+}
+.escroll {
+  height: min(66vh, 720px);
+  overflow-y: auto;
+  border-top: 1px solid var(--line);
+  scrollbar-width: thin;
+}
+.ehours {
+  position: relative;
+}
+.ehours span {
+  position: absolute;
+  right: 6px;
+  transform: translateY(-1px);
+  font-size: 11px;
+  color: var(--faint);
+}
+.ecol {
+  position: relative;
+  border-radius: 6px;
+  cursor: copy;
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--line) 75%, transparent) 1px,
+    transparent 1px
+  );
+  background-color: color-mix(in srgb, var(--surface2) 45%, transparent);
+}
+.ecol:hover {
+  background-color: color-mix(in srgb, var(--accent) 5%, var(--surface2));
+}
+#pEditor.dropping .ecol {
+  outline: 1.5px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: -2px;
+}
+.ecol .blk {
+  left: 3px;
+  right: 3px;
+  width: auto;
+}
+.ecol .blk b {
+  font-size: 12px;
+}

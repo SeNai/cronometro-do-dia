@@ -1,0 +1,33 @@
+# ---------------------------------------------------------------
+# Ficheiros que o git NUNCA deve guardar nem enviar para o GitHub
+# ---------------------------------------------------------------
+
+# Segredos do Google (quem os tiver consegue mexer no teu calendário)
+credenciais_google.json
+token_google.json
+google_sync.json
+
+# Os teus dados pessoais e definições (têm os links secretos dos calendários)
+dados.json
+config.json
+calendarios/
+
+# Ambiente Python e ficheiros gerados automaticamente
+.venv/
+__pycache__/
+*.pyc
+
+# Registo de erros do servidor
+app.log
+
+# Definições locais do Claude Code (são só deste computador)
+.claude/settings.local.json
+
+# Lixo do sistema operativo e de editores
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Para as próximas fases (Node / Vite)
+node_modules/
+dist/

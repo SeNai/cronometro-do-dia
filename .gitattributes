@@ -1,0 +1,6 @@
+# Fins de linha consistentes em Windows, Mac e Linux.
+* text=auto eol=lf
+# Os .bat do Windows precisam de fins de linha do Windows.
+*.bat text eol=crlf
+# Ficheiros binários: nunca mexer.
+*.ico binary
