@@ -41,6 +41,7 @@ src/
     plano.ts            o plano de cada dia: metas que faltam, onde cabe um bloco, «Preencher o dia»,
                         encher um dia com a semana ativa
     linhaDoTempo.ts     geometria da linha do tempo (faixas, píxeis por minuto, intervalo de horas)
+    planos.ts           planos guardados: planos do dia e semanas (resumos, converter para um dia, encaixar)
   estado/               estado partilhado
     loja.ts             a «loja» (Zustand): dados, definições e ações (começar, parar…); grava sozinha
     useAgora.ts         relógio partilhado que atualiza a cada segundo
@@ -52,14 +53,19 @@ src/
     useAtalhos.ts       teclas 1–9 (começar) e Espaço (parar)
     acoesPlano.ts       ações do plano (juntar, mover, apagar, preencher, limpar — com «Desfazer»)
                         e a navegação entre dias (irPara)
+    acoesPlanos.ts      planos guardados: aplicar a um dia, semana ativa, criar, mudar, copiar,
+                        duplicar e apagar (com «Desfazer»), separador mostrado
   componentes/
     ui/Botao.tsx        botão base (normal, principal, parar, fantasma)
     ui/Avisos.tsx       desenha os avisos e a janela de confirmação
     ui/Cartao.tsx       cartão base (título em maiúsculas + botões à direita)
     ui/MenuFlutuante.tsx  menu que aparece junto ao rato (fecha ao clicar fora / Esc; teclas 1–9)
-    topo/               Topo (barra fixa com ‹ Hoje ›), BotaoSom (🔊/🔇) e BotaoNotificacoes (🔔)
+    topo/               Topo (barra fixa com ‹ Hoje ›), BarraLateral (separadores), BotaoSom (🔊/🔇)
+                        e BotaoNotificacoes (🔔)
     linha-do-tempo/     CartaoLinhaDoTempo, LinhaDoTempo (desenho e rato), MenusDoPlano,
-                        ListaAtividades e ResumoPlano (chips das metas)
+                        ListaAtividades, ResumoPlano (chips das metas) e MenuPlanos («📋 Planos»)
+    planos/             SeparadorPlanos (listas + editor), EditorPlano (cabeçalho, paleta, dias),
+                        GrelhaPlano (a grelha e o rato), MenusGrelha e PontosAtividades
     agenda/             CartaoAgenda («Agenda de hoje»)
     roda/               cartão da roda: Roda, EditorTempo, NomeAtividade, MetaDoDia,
                         OutraACorrer, ASeguir e CartaoRoda (junta tudo)

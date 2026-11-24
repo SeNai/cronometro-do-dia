@@ -27,9 +27,27 @@ import {
   proximoCompromisso
 } from '../lib/consultas';
 import { normalizarDados } from '../lib/migracoes';
+import type { PlanoAberto } from '../lib/planos';
 import { ESCALA_RODA, MIN, PASSO_RODA, curto, hoje, horaMinuto, limitar, novoUid } from '../lib/tempo';
 import type { Atividade, Bloco, Config, Dados, Dia, RespostaEventos } from '../tipos';
 import { avisar } from './avisos';
+
+/** Os separadores da barra lateral. */
+export type Vista = 'hoje' | 'planos' | 'stats' | 'log';
+
+/**
+ * Lê um valor guardado no browser (localStorage). Só para preferências do ecrã:
+ * se o browser não deixar, usa o valor por omissão e a app funciona na mesma.
+ */
+function lerDoBrowser<T>(chave: string, porOmissao: T): T {
+  try {
+    const v = localStorage.getItem(chave);
+    if (v == null) return porOmissao;
+    return chave === 'vista' ? (v as T) : (JSON.parse(v) as T);
+  } catch {
+    return porOmissao;
+  }
+}
 
 /** Definições por omissão, até chegarem as do servidor (iguais às de servidor/config.py). */
 const CONFIG_INICIAL: Config = {
@@ -61,6 +79,10 @@ interface Loja {
   dia: Dia;
   /** Atividade a ser arrastada dos cartões para a linha do tempo (null = nenhuma). */
   atividadeArrastada: number | null;
+  /** Separador mostrado (barra lateral). Lembrado no browser. */
+  vista: Vista;
+  /** Plano do dia ou semana aberta no editor do separador Planos. Lembrado no browser. */
+  planoAberto: PlanoAberto | null;
 
   /** Lê definições e dados do servidor e arruma os dados antigos. Corre uma vez, no arranque. */
   carregar: () => Promise<void>;
@@ -100,6 +122,8 @@ export const useLoja = create<Loja>()(
     eventos: {},
     dia: hoje(),
     atividadeArrastada: null,
+    vista: lerDoBrowser<Vista>('vista', 'hoje'),
+    planoAberto: lerDoBrowser<PlanoAberto | null>('planoAberto', null),
 
     carregar: async () => {
       try {
@@ -239,4 +263,15 @@ function agendarGravacao() {
 // Sempre que os dados mudam (depois de carregados), agenda a gravação.
 useLoja.subscribe((agora, antes) => {
   if (agora.carregado && antes.carregado && agora.dados !== antes.dados) agendarGravacao();
+});
+
+// Lembra no browser o separador e o plano aberto (para voltarem iguais da próxima vez).
+useLoja.subscribe((agora, antes) => {
+  try {
+    if (agora.vista !== antes.vista) localStorage.setItem('vista', agora.vista);
+    if (agora.planoAberto !== antes.planoAberto)
+      localStorage.setItem('planoAberto', JSON.stringify(agora.planoAberto));
+  } catch {
+    // browser sem armazenamento: não faz mal
+  }
 });

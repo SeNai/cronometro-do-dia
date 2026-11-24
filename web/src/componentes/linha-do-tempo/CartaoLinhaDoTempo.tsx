@@ -2,6 +2,7 @@
  * O cartão «Linha do tempo»: título com o dia, botões «✨ Preencher» e «Limpar plano»,
  * o resumo das metas, os eventos de dia inteiro, os nomes das colunas e a linha do tempo.
  */
+import { useState } from 'react';
 import { limparPlano, preencherODia } from '../../estado/acoesPlano';
 import { useLoja } from '../../estado/loja';
 import { blocosDoDia, podePlanear } from '../../lib/plano';
@@ -9,6 +10,7 @@ import { hoje, rotuloDoDia } from '../../lib/tempo';
 import { Botao } from '../ui/Botao';
 import { Cartao } from '../ui/Cartao';
 import { LinhaDoTempo } from './LinhaDoTempo';
+import { MenuPlanos } from './MenuPlanos';
 import { ResumoPlano } from './ResumoPlano';
 
 export function CartaoLinhaDoTempo() {
@@ -18,6 +20,8 @@ export function CartaoLinhaDoTempo() {
   const diaTodo = (resposta?.eventos ?? []).filter(e => e.diaTodo);
   const editavel = podePlanear(dia);
   const eHoje = dia === hoje();
+  // posição do menu «📋 Planos» (null = fechado)
+  const [menuPlanos, setMenuPlanos] = useState<{ x: number; y: number } | null>(null);
 
   return (
     <Cartao
@@ -32,8 +36,8 @@ export function CartaoLinhaDoTempo() {
         </span>
       }
       acoes={
-        editavel && (
-          <>
+        <>
+          {editavel && (
             <Botao
               pequeno
               title="Encaixa as metas que faltam nos espaços livres, sem mexer nos blocos que já tens"
@@ -41,13 +45,25 @@ export function CartaoLinhaDoTempo() {
             >
               {eHoje ? '✨ Preencher o resto do dia' : '✨ Preencher o dia'}
             </Botao>
-            {temBlocos && (
-              <Botao variante="fantasma" pequeno onClick={() => limparPlano(dia)}>
-                Limpar plano
-              </Botao>
-            )}
-          </>
-        )
+          )}
+          <Botao
+            variante="fantasma"
+            pequeno
+            title="Aplicar um plano a este dia ou escolher a semana ativa"
+            onClick={e => {
+              if (menuPlanos) return setMenuPlanos(null);
+              const r = e.currentTarget.getBoundingClientRect();
+              setMenuPlanos({ x: r.left - 60, y: r.bottom + 30 });
+            }}
+          >
+            📋 Planos
+          </Botao>
+          {editavel && temBlocos && (
+            <Botao variante="fantasma" pequeno onClick={() => limparPlano(dia)}>
+              Limpar plano
+            </Botao>
+          )}
+        </>
       }
     >
       <ResumoPlano />
@@ -70,6 +86,7 @@ export function CartaoLinhaDoTempo() {
         <span className="pl-1.5">Plano</span>
       </div>
       <LinhaDoTempo />
+      {menuPlanos && <MenuPlanos x={menuPlanos.x} y={menuPlanos.y} aoFechar={() => setMenuPlanos(null)} />}
     </Cartao>
   );
 }

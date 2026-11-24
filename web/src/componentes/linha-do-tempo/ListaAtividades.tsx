@@ -10,7 +10,8 @@ import { MIN, curto } from '../../lib/tempo';
 import type { Dia } from '../../tipos';
 
 interface Props {
-  dia: Dia;
+  /** Dia do plano (para mostrar quanto falta de cada meta). Sem dia (planos guardados), não mostra. */
+  dia?: Dia;
   /** Atividade atual (fica destacada). */
   atualId?: number;
   /** Bloco a não contar nas metas (ao trocar a atividade de um bloco, ele próprio não conta). */
@@ -37,7 +38,7 @@ export function ListaAtividades({
     );
 
   return dados.acts.map((a, i) => {
-    const falta = faltaDaMeta(dados, a, dia, excetoUid);
+    const falta = dia ? faltaDaMeta(dados, a, dia, excetoUid) : null;
     return (
       <button
         key={a.id}
