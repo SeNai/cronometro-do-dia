@@ -1,6 +1,6 @@
-# web/ — nova interface (React + TypeScript + Vite + Tailwind)
+# web/ — a interface (React + TypeScript + Vite + Tailwind)
 
-Em construção (fase 2 do roadmap). Fala com o servidor Python que já existe, sem o mudar.
+É o «frontend»: desenha o ecrã e pede tudo ao servidor Python (`../servidor/`) pelos endereços `/api/...`.
 
 ## Como correr
 
@@ -20,7 +20,7 @@ e mantém-no ligado enquanto o Vite estiver aberto (ver `scripts/dev.mjs`).
 | `npm run dev:vite` | Só o Vite (o servidor Python tem de estar ligado à parte) |
 | `npm run build` | Verifica os tipos e gera a versão final em `dist/` |
 | `npm run lint` | Procura erros comuns (oxlint) |
-| `npm run format` | Formata o código (Prettier, regras em `../.prettierrc.json`) |
+| `npm run format` | Formata o código (Prettier, regras em `.prettierrc.json`) |
 
 ## Estrutura
 

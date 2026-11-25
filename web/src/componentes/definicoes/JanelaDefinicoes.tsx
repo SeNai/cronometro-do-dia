@@ -137,7 +137,7 @@ export function JanelaDefinicoes() {
             por webcal://).
           </li>
           <li>
-            Também podes pôr ficheiros <b>.ics</b> na pasta <code>calendarios</code> da app.
+            Também podes pôr ficheiros <b>.ics</b> na pasta <code>dados/calendarios</code> da app.
           </li>
         </ul>
         O link é secreto: quem o tiver consegue ver a tua agenda. Fica guardado só no teu computador.

@@ -75,7 +75,7 @@ def events_for(day):
     diaTodo, local, calendario, cor e livre (marcado como "disponível").
     """
     if not HAS_ICAL:
-        return [], ["Faltam bibliotecas: corre  pip install -r requirements.txt"]
+        return [], ["Faltam bibliotecas: corre  pip install -r servidor/requirements.txt"]
     start = datetime.combine(day, dtime.min)
     end = start + timedelta(days=1)
     sources, errors = _fontes()

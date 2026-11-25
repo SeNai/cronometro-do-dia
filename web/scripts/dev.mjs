@@ -40,7 +40,7 @@ async function garantirServidor() {
   if (await servidorLigado()) return;
   if (servidor && servidor.exitCode === null) return; // ainda a arrancar
   console.log('[dev] A ligar o servidor Python…');
-  servidor = spawn(caminhoPython(), ['app.py', '--sem-browser'], { cwd: RAIZ, stdio: 'inherit' });
+  servidor = spawn(caminhoPython(), ['-m', 'servidor', '--sem-browser'], { cwd: RAIZ, stdio: 'inherit' });
   servidor.on('error', e => console.error('[dev] Não consegui arrancar o Python:', e.message));
   for (let i = 0; i < 20 && !(await servidorLigado()); i++) await new Promise(r => setTimeout(r, 250));
   console.log(

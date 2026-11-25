@@ -1,6 +1,6 @@
 """Cria o atalho «Cronómetro do Dia» (com ícone) no Ambiente de Trabalho e no Menu Iniciar.
 
-Corre uma vez:  .venv\\Scripts\\python criar_atalho.py   (ou duplo clique em instalar.bat)
+Corre uma vez:  .venv\\Scripts\\python scripts\\criar_atalho.py   (o instalar.bat já o faz)
 Depois, no Menu Iniciar, clica com o botão direito no atalho → «Afixar na barra de tarefas».
 """
 import base64
@@ -9,7 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent  # pasta do projeto (este ficheiro está em scripts/)
 NOME = "Cronómetro do Dia"
 
 
@@ -27,9 +27,9 @@ def criar(lnk):
         "$ProgressPreference='SilentlyContinue';"
         "$s=(New-Object -ComObject WScript.Shell).CreateShortcut(" + ps_str(lnk) + ");"
         f"$s.TargetPath={ps_str(pythonw())};"
-        f"$s.Arguments={ps_str(chr(34) + str(BASE / 'abrir.pyw') + chr(34))};"
+        f"$s.Arguments={ps_str(chr(34) + str(BASE / 'scripts' / 'abrir.pyw') + chr(34))};"
         f"$s.WorkingDirectory={ps_str(BASE)};"
-        f"$s.IconLocation={ps_str(str(BASE / 'icone.ico') + ',0')};"
+        f"$s.IconLocation={ps_str(str(BASE / 'web' / 'public' / 'icone.ico') + ',0')};"
         f"$s.Description={ps_str('Cronometra as partes do teu dia')};"
         "$s.Save()"
     )
@@ -40,7 +40,7 @@ def criar(lnk):
 
 def main():
     if os.name != "nt":
-        print("Isto só é preciso no Windows. No macOS/Linux usa o iniciar.command.")
+        print("Isto só é preciso no Windows. No macOS/Linux usa o scripts/iniciar.command.")
         return
     destinos = [
         Path(os.environ["APPDATA"]) / "Microsoft/Windows/Start Menu/Programs" / f"{NOME}.lnk",
