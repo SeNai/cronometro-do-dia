@@ -5,7 +5,7 @@
  * antigo de planos ou de semanas). Esta função devolve-os sempre no formato atual
  * (ver tipos.ts) e diz se mudou alguma coisa, para se gravar a versão corrigida.
  *
- * É a mesma lógica do arranque da interface antiga (static/js/main.js).
+ * É a mesma lógica do arranque da interface antiga (antes da passagem para React).
  */
 import type { Bloco, BlocoModelo, Dados, Modelo, Semana } from '../tipos';
 import { hoje, novoUid, somarDias } from './tempo';

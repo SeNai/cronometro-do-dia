@@ -10,7 +10,7 @@ Precisa do Node.js. Se não houver Node mas já existir uma versão gerada, usa 
 import shutil
 import subprocess
 
-from .config import BASE, STATIC
+from .config import BASE, INTERFACE
 
 WEB = BASE / "web"
 NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)  # no Windows, sem abrir uma janela de terminal
@@ -30,7 +30,7 @@ def _mais_recente(caminho):
 
 def precisa_de_gerar():
     """True se web/dist não existe ou está mais antigo do que o código em web/."""
-    gerado = STATIC / "index.html"
+    gerado = INTERFACE / "index.html"
     if not gerado.exists():
         return True
     return max(_mais_recente(WEB / f) for f in _FONTES) > gerado.stat().st_mtime
@@ -42,7 +42,7 @@ def garantir_interface(log=print):
         return None
     npm = shutil.which("npm")
     if not npm:
-        if (STATIC / "index.html").exists():
+        if (INTERFACE / "index.html").exists():
             return None  # sem Node, mas há uma versão gerada: usa essa
         return ("Falta gerar a interface e não encontrei o Node.js.\n"
                 "Instala-o em https://nodejs.org e volta a abrir a app.")
@@ -54,7 +54,7 @@ def garantir_interface(log=print):
         log("A gerar a interface (npm run build)…")
         subprocess.run([npm, "run", "build"], cwd=WEB, check=True, creationflags=NO_WINDOW)
     except (OSError, subprocess.CalledProcessError) as e:
-        if (STATIC / "index.html").exists():
+        if (INTERFACE / "index.html").exists():
             log(f"Não consegui gerar a interface ({e}); uso a versão anterior.")
             return None
         return f"Não consegui gerar a interface:\n{e}\n\nCorre «npm run build» na pasta web para veres o erro."

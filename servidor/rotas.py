@@ -20,7 +20,7 @@ from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qs, unquote, urlparse
 
 from . import calendario, google_calendar as gcal
-from .config import (CLIENT_KEYS, DATA, DATA_LOCK, GCRED, STATIC, get_config, load_json, save_json, today_ms,
+from .config import (CLIENT_KEYS, DATA, DATA_LOCK, GCRED, INTERFACE, get_config, load_json, save_json, today_ms,
                      update_config)
 
 # Último pedido recebido: serve para desligar a app quando a janela é fechada (ver servidor/__init__.py).
@@ -71,11 +71,11 @@ class Handler(BaseHTTPRequestHandler):
 
     def send_static(self, path):
         """Serve um ficheiro da interface gerada (sem deixar sair dessa pasta)."""
-        if not (STATIC / "index.html").exists():
+        if not (INTERFACE / "index.html").exists():
             return self.send(503, SEM_INTERFACE, "text/html; charset=utf-8")
         rel = unquote(path).lstrip("/") or "index.html"
-        f = (STATIC / rel).resolve()
-        if STATIC.resolve() not in f.parents or not f.is_file():
+        f = (INTERFACE / rel).resolve()
+        if INTERFACE.resolve() not in f.parents or not f.is_file():
             return self.send(404, {"erro": "não encontrado"})
         self.send(200, f.read_bytes(), MIME.get(f.suffix.lower(), "application/octet-stream"))
 
