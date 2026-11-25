@@ -13,12 +13,14 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent.parent  # pasta do projeto (este ficheiro está em scripts/)
 os.chdir(BASE)
 sys.path.insert(0, str(BASE))
 
 # pythonw não tem consola: guarda mensagens e erros num ficheiro.
-_log = open(BASE / "app.log", "a", encoding="utf-8", buffering=1)
+from servidor.config import DADOS  # noqa: E402  (ao importar, muda os ficheiros antigos para dados/)
+
+_log = open(DADOS / "app.log", "a", encoding="utf-8", buffering=1)
 sys.stdout = sys.stderr = _log
 
 PORT = int(os.environ.get("PORT", "8765"))
@@ -69,7 +71,7 @@ def garantir_bibliotecas():
     except ImportError:
         print("A instalar bibliotecas em falta…")
         subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "--disable-pip-version-check",
-                        "-r", str(BASE / "requirements.txt")], creationflags=NO_WINDOW)
+                        "-r", str(BASE / "servidor" / "requirements.txt")], creationflags=NO_WINDOW)
 
 
 def main():
@@ -83,13 +85,13 @@ def main():
     if erro:
         aviso(erro)
         return
-    import app
-    srv = app.criar_servidor()
+    from servidor import criar_servidor, servir
+    srv = criar_servidor()
     if srv is None:
         aviso(f"A porta {PORT} está ocupada por outro programa. Fecha-o ou muda a variável PORT.")
         return
     threading.Timer(0.3, abrir_janela).start()
-    app.servir(srv, auto_fechar=True)
+    servir(srv, auto_fechar=True)
 
 
 if __name__ == "__main__":
@@ -98,4 +100,4 @@ if __name__ == "__main__":
     except Exception as e:
         import traceback
         traceback.print_exc()
-        aviso(f"Não consegui abrir a app:\n{e}\n\nVê o ficheiro app.log na pasta da app.")
+        aviso(f"Não consegui abrir a app:\n{e}\n\nVê o ficheiro dados/app.log na pasta da app.")

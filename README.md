@@ -28,7 +28,7 @@ App que corre no teu computador para cronometrares as partes do dia (candidatura
 - **Linha do tempo**, **resumo do dia**, **últimos 7 dias** e o histórico de qualquer dia.
 - **Google Calendar**: se quiseres, cada bloco feito vai para um calendário teu chamado «Cronómetro do Dia».
 
-Os dados ficam em `dados.json`, nesta pasta.
+Tudo o que é teu (atividades, registo, planos, definições e a ligação ao Google) fica na pasta `dados/`, que nunca vai para o GitHub.
 
 ## Instalar (só na primeira vez)
 
@@ -45,7 +45,9 @@ Quando fechas a janela, a app desliga-se sozinha uns minutos depois. Se tiveres 
 
 Carrega em **🔔 Ativar avisos** para receberes notificações do Windows mesmo com a janela minimizada.
 
-Para ver erros, usa o `iniciar.bat`, que abre a app com o terminal visível. Os erros da versão sem terminal ficam em `app.log`.
+Os erros da app aberta pelo ícone ficam em `dados/app.log`. Para a veres a correr com o terminal visível, abre um terminal na pasta da app e corre `.venv\Scripts\python -m servidor`.
+
+No macOS ou Linux, abre a app com `scripts/iniciar.command`.
 
 ## Ligar calendários para ler
 
@@ -75,7 +77,7 @@ Depois disto:
 - A app só tem acesso aos calendários que ela própria criou. Não consegue ver nem mexer no resto da tua agenda.
 - **Não** juntes o calendário «Cronómetro do Dia» à lista de calendários para ler, senão os blocos aparecem em duplicado.
 
-Os ficheiros `credenciais_google.json` e `token_google.json` dão acesso à tua conta. Não os partilhes.
+Os ficheiros `dados/credenciais_google.json` e `dados/token_google.json` dão acesso à tua conta. Não os partilhes.
 
 ## Abrir sozinha quando ligas o computador (opcional)
 
@@ -91,24 +93,33 @@ Carrega em `Win + R`, escreve `shell:startup` e copia para lá o atalho «Cronó
 
 ## Estrutura do projeto (para quem quiser mexer no código)
 
+A app tem duas partes que trabalham juntas: o **frontend** (`web/`) desenha o ecrã no browser e pede tudo
+ao **backend** (`servidor/`) pelos endereços `/api/...`. O backend guarda os dados, lê os calendários e fala com o Google.
+
 ```
-app.py                  arranque pela linha de comandos (python app.py)
-abrir.pyw               arranque sem terminal, usado pelo atalho do Windows
-criar_atalho.py         cria o atalho com ícone · instalar.bat / iniciar.bat / iniciar.command
-servidor/               backend em Python (só biblioteca padrão + calendário/Google)
-  config.py             caminhos, leitura/escrita de JSON, definições por omissão
+instalar.bat            instala tudo no Windows e cria o atalho (corre uma vez)
+servidor/               BACKEND em Python
+  __main__.py           arranque pela linha de comandos: python -m servidor
+  config.py             caminhos (pasta dados/), leitura/escrita de JSON, definições por omissão
   calendario.py         lê calendários iCal (só leitura)
   google_calendar.py    envia os blocos feitos para o Google Calendar
   rotas.py              pedidos HTTP: a interface (web/dist/) e a API /api/…
   interface.py          gera a interface (npm run build) quando ainda não existe ou o código mudou
-web/                    interface em React + TypeScript + Vite + Tailwind (ver web/README.md)
+  requirements.txt      bibliotecas Python de que o servidor precisa
+web/                    FRONTEND em React + TypeScript + Vite + Tailwind (ver web/README.md)
   src/lib/              lógica pura (tempos, plano, planos guardados, roda, resumo…)
   src/estado/           estado partilhado (Zustand), ações e relógios
   src/componentes/      o que aparece no ecrã, uma pasta por zona
+  public/icone.ico      o ícone da app (também usado pelo atalho)
   dist/                 a versão gerada que o servidor entrega ao browser (não vai para o git)
+scripts/                lançadores
+  abrir.pyw             o que o atalho corre: abre a app numa janela, sem terminal
+  criar_atalho.py       cria o atalho com ícone (o instalar.bat chama-o)
+  iniciar.command       abrir a app em macOS/Linux
+dados/                  os teus dados e segredos (criada pela app, nunca vai para o git)
 ```
 
 - **Abrir a app pelo atalho trata de tudo:** se mudaste o código em `web/`, a interface é gerada outra vez antes de abrir.
 - **Para desenvolver a interface:** `cd web` e `npm run dev`. Abre em http://localhost:5173, liga o servidor Python sozinho e atualiza a cada alteração.
 - O `web/README.md` explica cada pasta e ficheiro da interface.
-- Para formatar o código: `cd web` e `npm run format`. A configuração está em `.prettierrc.json`.
+- Para formatar o código: `cd web` e `npm run format`.

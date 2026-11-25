@@ -1,7 +1,7 @@
 """Pedidos HTTP: ficheiros da interface (web/dist/, gerada pelo Vite) e a API JSON usada pelo browser.
 
 API
-  GET  /api/ping              → a app está a correr? (usado pelo abrir.pyw)
+  GET  /api/ping              → a app está a correr? (usado por scripts/abrir.pyw)
   GET  /api/dados             → dados.json
   GET  /api/config            → definições
   GET  /api/eventos?dia=AAAA-MM-DD[&refrescar=1] → eventos dos calendários nesse dia
@@ -147,7 +147,7 @@ class Handler(BaseHTTPRequestHandler):
 
         if u.path == "/api/google/ligar":
             if not gcal.HAS_GOOGLE:
-                return self.send(400, {"erro": "Faltam bibliotecas: corre  pip install -r requirements.txt"})
+                return self.send(400, {"erro": "Faltam bibliotecas: corre  pip install -r servidor/requirements.txt"})
             if not GCRED.exists():
                 return self.send(400, {"erro": "Primeiro carrega o ficheiro de credenciais."})
             gcal.iniciar_ligacao()

@@ -75,7 +75,7 @@ export function SeccaoGoogle({ escrever, aoMudarEscrever }: Props) {
     estado = (
       <>
         ⚠ Faltam bibliotecas. Fecha a app e volta a abri-la pelo atalho (instala sozinha), ou corre{' '}
-        <code>pip install -r requirements.txt</code>.
+        <code>pip install -r servidor/requirements.txt</code>.
       </>
     );
   else if (g.a_ligar) estado = '⏳ À espera que autorizes no browser…';

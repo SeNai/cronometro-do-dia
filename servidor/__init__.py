@@ -7,7 +7,9 @@ Organização:
   rotas.py            pedidos HTTP: interface (web/dist/) e API JSON
   interface.py        gera a interface React (npm run build) quando é preciso
 
-Uso (ver app.py e abrir.pyw):
+Arranque: python -m servidor (ver __main__.py) ou o atalho (scripts/abrir.pyw).
+
+Uso:
   srv = criar_servidor()      # None se a porta já estiver ocupada (app já aberta)
   servir(srv, auto_fechar=True)
 """

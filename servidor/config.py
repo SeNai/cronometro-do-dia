@@ -1,8 +1,13 @@
 """Caminhos dos ficheiros, leitura/escrita de JSON e definições da app.
 
-Tudo o que a app guarda fica na pasta do projeto:
-  dados.json   → atividades, registo de blocos, planos (escrito pelo browser via /api/dados)
-  config.json  → definições (calendários, sons, horas do plano, Google…)
+Tudo o que é teu fica na pasta dados/ (o git ignora-a, nunca vai para o GitHub):
+  dados.json               atividades, registo de blocos, planos (escrito pelo browser via /api/dados)
+  config.json              definições (calendários, sons, horas do plano, Google…)
+  calendarios/             ficheiros .ics locais (opcional)
+  credenciais_google.json  cliente OAuth (transferido da Google Cloud Console) — segredo
+  token_google.json        autorização da tua conta Google — segredo
+  google_sync.json         que blocos já estão no Google
+  app.log                  mensagens e erros da app aberta pelo atalho
 """
 import json
 import os
@@ -13,14 +18,28 @@ from pathlib import Path
 # ---------------------------------------------------------------- caminhos
 
 BASE = Path(__file__).resolve().parent.parent      # pasta do projeto
-DATA = BASE / "dados.json"
-CONFIG = BASE / "config.json"
-CAL_DIR = BASE / "calendarios"                     # ficheiros .ics locais (opcional)
+DADOS = BASE / "dados"                             # os teus dados e definições
+DATA = DADOS / "dados.json"
+CONFIG = DADOS / "config.json"
+CAL_DIR = DADOS / "calendarios"
+GCRED = DADOS / "credenciais_google.json"
+GTOKEN = DADOS / "token_google.json"
+GSYNC = DADOS / "google_sync.json"
 INTERFACE = BASE / "web" / "dist"                  # interface gerada a partir de web/ (npm run build)
-GCRED = BASE / "credenciais_google.json"           # cliente OAuth (transferido da Google Cloud Console)
-GTOKEN = BASE / "token_google.json"                # autorização da tua conta
-GSYNC = BASE / "google_sync.json"                  # que blocos já estão no Google
 PORT = int(os.environ.get("PORT", "8765"))
+
+
+def _mudar_para_dados():
+    """Versões antigas guardavam estes ficheiros na raiz do projeto: muda-os para dados/ (só uma vez)."""
+    DADOS.mkdir(exist_ok=True)
+    for nome in ("dados.json", "config.json", "calendarios", "credenciais_google.json",
+                 "token_google.json", "google_sync.json", "app.log"):
+        antigo, novo = BASE / nome, DADOS / nome
+        if antigo.exists() and not novo.exists():
+            antigo.rename(novo)
+
+
+_mudar_para_dados()
 
 # ---------------------------------------------------------------- bloqueios
 # O servidor atende vários pedidos ao mesmo tempo (ThreadingHTTPServer):

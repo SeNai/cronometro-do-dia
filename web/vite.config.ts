@@ -3,7 +3,7 @@
  *
  *   npm run dev   → abre a interface em http://localhost:5173 e atualiza-a sozinha a cada alteração.
  *                   Os pedidos a /api/... são reencaminhados para o servidor Python (porta 8765),
- *                   por isso o servidor tem de estar a correr (pelo atalho ou com iniciar.bat).
+ *                   (o npm run dev arranca-o sozinho se não estiver a correr — ver scripts/dev.mjs).
  *   npm run build → gera a versão final em web/dist/ (é essa que o servidor Python vai servir).
  */
 import tailwindcss from '@tailwindcss/vite';
